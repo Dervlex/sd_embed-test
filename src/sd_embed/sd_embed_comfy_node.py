@@ -20,10 +20,29 @@ from typing import Any, Dict, Iterable, Optional, Tuple
 
 import torch
 
-from .embedding_funcs import (
-    get_weighted_text_embeddings_sd15,
-    get_weighted_text_embeddings_sdxl,
-)
+try:
+    from .embedding_funcs import (
+        get_weighted_text_embeddings_sd15,
+        get_weighted_text_embeddings_sdxl,
+    )
+except ImportError:  # pragma: no cover - fallback for ComfyUI custom node usage
+    import sys
+    from pathlib import Path
+
+    _MODULE_DIR = Path(__file__).resolve().parent
+    _EXTRA_PATHS = (
+        _MODULE_DIR,
+        _MODULE_DIR.parent,
+    )
+
+    for _path in _EXTRA_PATHS:
+        if _path is not None and str(_path) not in sys.path:
+            sys.path.insert(0, str(_path))
+
+    from embedding_funcs import (  # type: ignore
+        get_weighted_text_embeddings_sd15,
+        get_weighted_text_embeddings_sdxl,
+    )
 
 
 @dataclass
